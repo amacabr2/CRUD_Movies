@@ -25,6 +25,10 @@ class MovieController extends ApiController {
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
     public function index(MovieRepository $movieRepository) {
+        if (!$this->isAuthorized()) {
+            return $this->respondWithUnauthorized();
+        }
+
         $movies = $movieRepository->transformAll();
         return $this->respond($movies);
     }
@@ -38,6 +42,10 @@ class MovieController extends ApiController {
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
     public function show(int $id, MovieRepository $movieRepository) {
+        if (!$this->isAuthorized()) {
+            return $this->respondWithUnauthorized();
+        }
+
         $movie = $movieRepository->find($id);
         if (!$movie) {
             return $this->respondNotFound();
@@ -56,6 +64,10 @@ class MovieController extends ApiController {
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
     public function create(Request $request, MovieRepository $movieRepository, EntityManagerInterface $entityManager) {
+        if (!$this->isAuthorized()) {
+            return $this->respondWithUnauthorized();
+        }
+
         $request = $this->transformJsonBody($request);
         if (!$request) {
             return $this->respondValidationError("Please provide a valid request");
@@ -83,6 +95,10 @@ class MovieController extends ApiController {
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
     public function increaseCount($id, EntityManagerInterface $em, MovieRepository $movieRepository) {
+        if (!$this->isAuthorized()) {
+            return $this->respondWithUnauthorized();
+        }
+
         $movie = $movieRepository->find($id);
         if (! $movie) {
             return $this->respondNotFound();
