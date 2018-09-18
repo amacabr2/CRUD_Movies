@@ -11,7 +11,6 @@ namespace App\Controller;
 use App\Entity\Movie;
 use App\Repository\MovieRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -23,8 +22,8 @@ class MovieController extends ApiController {
      * @param MovieRepository $movieRepository
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
-    public function index(MovieRepository $movieRepository, LoggerInterface $logger) {
-        if (!$this->isAuthorized($logger)) {
+    public function index(MovieRepository $movieRepository) {
+        if (!$this->isAuthorized()) {
             return $this->respondWithUnauthorized();
         }
 

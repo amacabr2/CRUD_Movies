@@ -104,7 +104,7 @@ class ApiController {
     /**
      * @return bool
      */
-    public function isAuthorized(LoggerInterface $logger): bool  {
+    public function isAuthorized(): bool  {
         if (! isset($_SERVER['HTTP_AUTHORIZATION'])) {
             return false;
         }
@@ -134,7 +134,6 @@ class ApiController {
             $jwt = $jwtVerifier->verify($authType . " " . $authData);
         } catch (\Exception $e) {
             // We encountered an error, return a 401.
-            $logger->info($authData);
             return false;
         }
 
