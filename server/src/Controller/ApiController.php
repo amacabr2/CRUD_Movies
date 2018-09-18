@@ -57,4 +57,28 @@ class ApiController {
     public function respondWithUnauthorized(string $message = 'Not authorized') {
         return $this->setStatutCode(401)->respondWithErrors($message);
     }
+
+    /**
+     * @param string $message
+     * @return JsonResponse
+     */
+    public function respondValidationError(string $message = 'Validation errors') {
+        return $this->setStatutCode(422)->respondWithErrors($message);
+    }
+
+    /**
+     * @param string $message
+     * @return JsonResponse
+     */
+    public function respondNotFound(string $message = 'Not found') {
+        return $this->setStatutCode(404)->respondWithErrors($message);
+    }
+
+    /**
+     * @param array $data
+     * @return JsonResponse
+     */
+    public function respondCreated(array $data = []) {
+        return $this->setStatutCode(201)->respond($data);
+    }
 }
