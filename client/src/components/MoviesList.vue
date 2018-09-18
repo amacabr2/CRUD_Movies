@@ -55,6 +55,7 @@
         methods: {
             async getMovies() {
                 axios.defaults.headers.common['Authorization'] = `Bearer ${await this.$auth.getAccessToken()}`
+
                 try {
                     const response = await axios.get('http://localhost:8000/movies')
                     this.movies = response.data

@@ -11,21 +11,20 @@ namespace App\Controller;
 use App\Entity\Movie;
 use App\Repository\MovieRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 
 class MovieController extends ApiController {
 
     /**
-     * @Route("/movies")
-     * @Method("GET")
+     * @Route("/movies", methods="GET")
      *
      * @param MovieRepository $movieRepository
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
-    public function index(MovieRepository $movieRepository) {
-        if (!$this->isAuthorized()) {
+    public function index(MovieRepository $movieRepository, LoggerInterface $logger) {
+        if (!$this->isAuthorized($logger)) {
             return $this->respondWithUnauthorized();
         }
 
@@ -34,8 +33,7 @@ class MovieController extends ApiController {
     }
 
     /**
-     * @Route("/movies/{id}")
-     * @Method("GET")
+     * @Route("/movies/{id}", methods="GET")
      *
      * @param int $id
      * @param MovieRepository $movieRepository
@@ -55,8 +53,7 @@ class MovieController extends ApiController {
     }
 
     /**
-     * @Route("/movies")
-     * @Method("POST")
+     * @Route("/movies", methods="POST")
      *
      * @param Request $request
      * @param MovieRepository $movieRepository
@@ -86,8 +83,7 @@ class MovieController extends ApiController {
     }
 
     /**
-     * @Route("/movies/{id}/count")
-     * @Method("POST")
+     * @Route("/movies/{id}/count", methods="GET")
      *
      * @param $id
      * @param EntityManagerInterface $em

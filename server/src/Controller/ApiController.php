@@ -9,6 +9,7 @@
 namespace App\Controller;
 
 
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -103,8 +104,8 @@ class ApiController {
     /**
      * @return bool
      */
-    public function isAuthorized(): bool  {
-        if (! isset( $_SERVER['HTTP_AUTHORIZATION'])) {
+    public function isAuthorized(LoggerInterface $logger): bool  {
+        if (! isset($_SERVER['HTTP_AUTHORIZATION'])) {
             return false;
         }
 
@@ -112,7 +113,7 @@ class ApiController {
         $authData = null;
 
         // Extract the auth type and the data from the Authorization header.
-        @list($authType, $authData) = explode(" ", $_SERVER['HTTP_AUTHORIZATION'], 2);
+        list($authType, $authData) = explode(" ", $_SERVER['HTTP_AUTHORIZATION'], 2);
 
         // If the Authorization Header is not a bearer type, return a 401.
         if ($authType != 'Bearer') {
@@ -130,9 +131,10 @@ class ApiController {
                 ->build();
 
             // Verify the JWT from the Authorization Header.
-            $jwt = $jwtVerifier->verify($authData);
+            $jwt = $jwtVerifier->verify($authType . " " . $authData);
         } catch (\Exception $e) {
             // We encountered an error, return a 401.
+            $logger->info($authData);
             return false;
         }
 
