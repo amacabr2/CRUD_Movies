@@ -19,7 +19,7 @@ Vue.use(Auth, {
 
 const routes = [
     { path: '/implicit/callback', component: Auth.handleCallback() },
-    { path: '/', component: MoviesList },
+    { path: '/movies', component: MoviesList },
 ]
 
 const router = new VueRouter({

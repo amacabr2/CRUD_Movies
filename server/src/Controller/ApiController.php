@@ -10,6 +10,7 @@ namespace App\Controller;
 
 
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 
 class ApiController {
 
@@ -80,6 +81,23 @@ class ApiController {
      */
     public function respondCreated(array $data = []) {
         return $this->setStatutCode(201)->respond($data);
+    }
+
+    /**
+     * @param Request $request
+     * @return null|Request
+     */
+    protected function transformJsonBody(Request $request) {
+        $data = json_decode($request->getContent(), true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            return null;
+        }
+        if ($data === null) {
+            return $request;
+        }
+
+        $request->request->replace($data);
+        return $request;
     }
 
     /**
