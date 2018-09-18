@@ -1,47 +1,43 @@
 <template>
-   <div class="container">
-       <table class="table">
-           <thead>
-           <tr>
-               <th>ID</th>
-               <th>Title</th>
-               <th>Count</th>
-           </tr>
-           </thead>
-
-           <tbody>
-           <template v-for="movie in movies">
-               <tr v-bind:key="movie.id">
-                   <td>{{ movie.id }}</td>
-                   <td>{{ movie.title }}</td>
-                   <td>{{ movie.count }}</td>
-               </tr>
-           </template>
-           </tbody>
-       </table>
-
-       <a class="button is-primary">Add Movie</a>
-   </div>
+    <div class="container">
+        <button v-if='authenticated' v-on:click='logout' id='logout-button'> Logout </button>
+        <button v-else v-on:click='login' id='login-button'> Login </button>
+        <router-view></router-view>
+    </div>
 </template>
 
 <script>
     export default {
-        name: "Dashboard",
-
-        data() {
+        data: function () {
             return {
-                movies: []
+                authenticated: false
             }
         },
 
-        async created() {
-            await this.getMovies()
+        created () {
+            this.isAuthenticated()
+        },
+
+        watch: {
+            // Everytime the route changes, check for auth status
+            '$route': 'isAuthenticated'
         },
 
         methods: {
-            async getMovies() {
-                const response = await axios.get('http://localhost:8000/movies')
-                this.movies = response.data
+            async isAuthenticated () {
+                this.authenticated = await this.$auth.isAuthenticated()
+            },
+
+            login () {
+                this.$auth.loginRedirect('/')
+            },
+
+            async logout () {
+                await this.$auth.logout()
+                await this.isAuthenticated()
+
+                // Navigate back to home
+                this.$router.push({ path: '/' })
             }
         }
     }
