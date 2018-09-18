@@ -12,7 +12,7 @@ Vue.config.productionTip = false
 Vue.use(VueRouter)
 Vue.use(Auth, {
     issuer: 'https://dev-846151.oktapreview.com /oauth2/default',
-    client_id: '{YOUR_CLIENT_ID}',
+    client_id: '0oagauc9sdZmiDH0r0h7',
     redirect_uri: 'http://localhost:8080/implicit/callback',
     scope: 'openid profile email'
 })
