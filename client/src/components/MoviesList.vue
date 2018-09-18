@@ -36,9 +36,7 @@
     import MovieForm from './MovieForm.vue'
 
     export default {
-        name: "MoviesList",
-
-        component: {
+        components: {
             MovieForm
         },
 

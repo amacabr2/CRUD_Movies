@@ -13,9 +13,9 @@
 </template>
 
 <script>
-    export default {
-        name: "MovieForm",
+    import axios from 'axios'
 
+    export default {
         data() {
             return {
                 title: '',
@@ -23,6 +23,7 @@
                 isLoading: false
             }
         },
+
         methods: {
             onSubmit() {
                 this.isLoading = true
