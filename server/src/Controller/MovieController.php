@@ -8,19 +8,92 @@
 
 namespace App\Controller;
 
-
-use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Entity\Movie;
+use App\Repository\MovieRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 
 class MovieController extends ApiController {
 
     /**
      * @Route("/movies")
+     * @Method("GET")
+     *
+     * @param MovieRepository $movieRepository
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
-    public function getMovies() {
+    public function index(MovieRepository $movieRepository) {
+        $movies = $movieRepository->transformAll();
+        return $this->respond($movies);
+    }
+
+    /**
+     * @Route("/movies/{id}")
+     * @Method("GET")
+     *
+     * @param int $id
+     * @param MovieRepository $movieRepository
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     */
+    public function show(int $id, MovieRepository $movieRepository) {
+        $movie = $movieRepository->find($id);
+        if (!$movie) {
+            return $this->respondNotFound();
+        }
+        $movie = $movieRepository->transform($movie);
+        return $this->respond($movie);
+    }
+
+    /**
+     * @Route("/movies")
+     * @Method("POST")
+     *
+     * @param Request $request
+     * @param MovieRepository $movieRepository
+     * @param EntityManagerInterface $entityManager
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     */
+    public function create(Request $request, MovieRepository $movieRepository, EntityManagerInterface $entityManager) {
+        $request = $this->transformJsonBody($request);
+        if (!$request) {
+            return $this->respondValidationError("Please provide a valid request");
+        }
+
+        if (!$request->get('title')) {
+            return $this->respondValidationError('Please provide a title');
+        }
+
+        $movie = new Movie();
+        $movie->setTitle($request->get('title'));
+        $movie->setCount(0);
+        $entityManager->persist($movie);
+        $entityManager->flush();
+        return $this->respondCreated($movieRepository->transform($movie));
+    }
+
+    /**
+     * @Route("/movies/{id}/count")
+     * @Method("POST")
+     *
+     * @param $id
+     * @param EntityManagerInterface $em
+     * @param MovieRepository $movieRepository
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     */
+    public function increaseCount($id, EntityManagerInterface $em, MovieRepository $movieRepository) {
+        $movie = $movieRepository->find($id);
+        if (! $movie) {
+            return $this->respondNotFound();
+        }
+
+        $movie->setCount($movie->getCount() + 1);
+        $em->persist($movie);
+        $em->flush();
+
         return $this->respond([
-            'title' => 'Au hasard',
-            'count' => 0
+            'count' => $movie->getCount()
         ]);
     }
 }
